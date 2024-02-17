@@ -1,0 +1,17 @@
+{
+  "name": "user_crud",
+  "version": "1.0.0",
+  "description": "This is a very simple practice project for the \"Vem Ser Tech - Backend\" bootcamp, from Ada Tech. Here I put in practice what I have learned from how to make restful APIs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
