@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/", controller.listAllUsersnames);
 router.get("/:id", controller.showUserById);
 router.post("/create", hasContentMiddleware(['username', 'email', 'password']), controller.createUser);
+router.post("/login", hasContentMiddleware(['username', 'password']), controller.login);
 router.put("/:id", controller.alterUser);
 router.delete("/:id", controller.deleteUser);
 
