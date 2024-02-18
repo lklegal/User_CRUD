@@ -1,15 +1,19 @@
-const fetchUsers = (model) => {
+const dbQueryCallback = (modelQueryFunction, ...args) => {
     return new Promise((resolve, reject) => {
-        model.listAllUsers((err, data) => {
+        const callback = (err, data) => {
             if (err) {
                 reject();
             } else {
                 resolve(data);
             }
-        });
+        };
+
+        if(args.length > 0){
+            modelQueryFunction(args, callback);
+        }else{
+            modelQueryFunction(callback);
+        }
     });
 };
 
-module.exports = {
-    fetchUsers
-};
+module.exports = dbQueryCallback;

@@ -5,15 +5,16 @@ const model = require("../model/users.model");
 const utils = require("../utils");
 
 const listAllUsersnames = (req, res) => {
-    const callback = (err, data) => {
-        if(err) {
-            res.status(500).json({ message: "Database error"});
-        } else {
+    const dbQuery = async () => {
+        try{
+            const data = await utils.dbQueryCallback(model.listAllUsersnames);
             res.status(200).json(data);
+        }catch(err){
+            res.status(500).json({error: "Database error. " + err})
         }
-    };    
+    }
 
-    model.listAllUsersnames(callback);
+    dbQuery();
 };
 
 const login = (req, res) => {
@@ -21,7 +22,7 @@ const login = (req, res) => {
 
     const mainLogin = async () => {
         try {
-            const allUsers = await utils.fetchUsers(model);
+            const allUsers = await utils.dbQueryCallback(model.listAllUsers);
             const user = allUsers.find((value) => {
                 return username === value.username;
             });
@@ -51,23 +52,15 @@ const login = (req, res) => {
 };
 
 const showUserById = (req, res) => {
-
+    
 };
 
 const createUser = (req, res) => {
     const {username, email, password} = req.body;
-
-    const createUserCallback = (err, data) => {
-        if(err) {
-            res.status(500).json({ message: "Database error"});
-        } else {
-            res.status(201).json();
-        }
-    };
     
     const createUserMain = async () => {
         try {
-            const allUsers = await utils.fetchUsers(model);
+            const allUsers = await utils.dbQueryCallback(model.listAllUsers);
 
             const alreadyUsed = allUsers.find((value) => {
                 return username === value.username || email === value.userEmail;
@@ -80,7 +73,21 @@ const createUser = (req, res) => {
 
             const salt = bcrypt.genSaltSync();
             const hashedPassword = bcrypt.hashSync(password, salt);
-            model.createUser(username, email, hashedPassword, salt, createUserCallback);
+
+            const dbQuery = async () => {
+                try{
+                    await utils.dbQueryCallback(model.createUser, {
+                        'username': username,
+                        'email': email,
+                        'password': hashedPassword,
+                        'salt': salt
+                    });
+                    res.status(201).json();
+                } catch(err){
+                    res.status(500).json({error: "Database error. " + err});
+                }
+            }
+            dbQuery();
         } catch(err) {
             res.status(500).json({error: "Database error."});
         }

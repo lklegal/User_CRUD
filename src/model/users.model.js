@@ -10,17 +10,16 @@ const listAllUsers = async (callback) => {
     dbConnection.query(sql, callback);
 };
 
-const login = () => {
-
-};
-
 const showUserById = () => {
 
 };
 
-const createUser = (username, email, password, salt, callback) => {
+const createUser = (userInfo, callback) => {
+    //because userInfo is passed as the ...args of the dbQueryCallback function, it comes within an array
+    userInfo = userInfo[0];
     const sql = "INSERT INTO Users (userName, userEmail, userPassword, userSalt) values (?, ?, ?, ?);";
-    dbConnection.query(sql, [username, email, password, salt], callback);
+    dbConnection.query(sql, [userInfo.username, userInfo.email, userInfo.password, userInfo.salt],
+        callback);
 };
 
 const alterUser = () => {
@@ -34,7 +33,6 @@ const deleteUser = () => {
 module.exports = {
     listAllUsersnames,
     listAllUsers,
-    login,
     showUserById,
     createUser,
     alterUser,
