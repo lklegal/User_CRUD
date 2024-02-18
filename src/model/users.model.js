@@ -10,8 +10,12 @@ const listAllUsers = async (callback) => {
     dbConnection.query(sql, callback);
 };
 
-const showUserById = () => {
-
+const showUserById = (id, callback) => {
+    /*Removing id from the array to put it again right after. Is this more or less confusing than just
+    passing the id in dbConnection.query without the "[]", since it's already an array?*/
+    id = id[0];
+    const sql = "SELECT * FROM Users WHERE userID = ?";
+    dbConnection.query(sql, [id], callback);
 };
 
 const createUser = (userInfo, callback) => {

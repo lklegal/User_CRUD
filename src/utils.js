@@ -16,4 +16,6 @@ const dbQueryCallback = (modelQueryFunction, ...args) => {
     });
 };
 
-module.exports = dbQueryCallback;
+module.exports = {
+    dbQueryCallback
+};

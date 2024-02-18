@@ -52,7 +52,21 @@ const login = (req, res) => {
 };
 
 const showUserById = (req, res) => {
-    
+    if(req.body.userID !== parseInt(req.params.id)){
+        res.status(403).send("User not authorized to access this information.");
+        return;
+    }
+
+    const dbQuery = async () => {
+        try{
+            const userData = await utils.dbQueryCallback(model.showUserById, parseInt(req.params.id));
+            res.status(200).json(userData);
+        }catch(err){
+            res.status(500).send({error: "Database error.", err});
+        }
+    }
+
+    dbQuery();
 };
 
 const createUser = (req, res) => {
