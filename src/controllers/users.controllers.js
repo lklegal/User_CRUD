@@ -4,10 +4,10 @@ require('dotenv').config();
 const model = require("../model/users.model");
 const utils = require("../utils");
 
-const listAllUsersnames = (req, res) => {
+const listAllUsernames = (req, res) => {
     const dbQuery = async () => {
         try{
-            const data = await utils.dbQueryCallback(model.listAllUsersnames);
+            const data = await utils.dbQueryCallback(model.listAllUsernames);
             res.status(200).json(data);
         }catch(err){
             res.status(500).json({error: "Database error"})
@@ -152,7 +152,7 @@ const deleteUser = (req, res) => {
 };
 
 module.exports = {
-    listAllUsersnames,
+    listAllUsernames,
     login,
     showUserById,
     createUser,

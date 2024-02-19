@@ -1,6 +1,6 @@
 const dbConnection = require("../config/dbconfig");
 
-const listAllUsersnames = async (callback) => {
+const listAllUsernames = async (callback) => {
     const sql = "SELECT username FROM Users;";
     dbConnection.query(sql, callback);
 };
@@ -42,7 +42,7 @@ const deleteUser = (id, callback) => {
 };
 
 module.exports = {
-    listAllUsersnames,
+    listAllUsernames,
     listAllUsers,
     showUserById,
     createUser,
