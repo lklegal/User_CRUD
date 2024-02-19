@@ -10,7 +10,7 @@ const listAllUsersnames = (req, res) => {
             const data = await utils.dbQueryCallback(model.listAllUsersnames);
             res.status(200).json(data);
         }catch(err){
-            res.status(500).json({error: "Database error. " + err})
+            res.status(500).json({error: "Database error"})
         }
     }
 
@@ -39,12 +39,12 @@ const login = (req, res) => {
                 return;
             }
 
-            const expiresIn = "100s";
+            const expiresIn = "2h";
             const token = jwt.sign({id: user.userID, username: user.username}, process.env.JWT_SECRETKEY,
                 {expiresIn});
             res.status(200).json({type: "Bearer", token: token, expiresIn: expiresIn});
         } catch(err){
-            res.status(500).send({error: "Database error.", err});
+            res.status(500).json({error: "Database error"});
         }
     };
 
@@ -53,7 +53,7 @@ const login = (req, res) => {
 
 const showUserById = (req, res) => {
     if(req.body.userID !== parseInt(req.params.id)){
-        res.status(403).send("User not authorized to access this information.");
+        res.status(403).json({error: "User not authorized to access this information."});
         return;
     }
 
@@ -62,7 +62,7 @@ const showUserById = (req, res) => {
             const userData = await utils.dbQueryCallback(model.showUserById, parseInt(req.params.id));
             res.status(200).json(userData);
         }catch(err){
-            res.status(500).send({error: "Database error.", err});
+            res.status(500).json({error: "Database error."});
         }
     }
 
@@ -98,23 +98,56 @@ const createUser = (req, res) => {
                     });
                     res.status(201).json();
                 } catch(err){
-                    res.status(500).json({error: "Database error. " + err});
+                    res.status(500).json({error: "Database error"});
                 }
             }
             dbQuery();
         } catch(err) {
-            res.status(500).json({error: "Database error."});
+            res.status(500).json({error: "Database error"});
         }
     };
 
     createUserMain();
 };
 
-const alterUser = (req, res) => {
+const alterPassword = (req, res) => {
+    if(req.body.userID !== parseInt(req.params.id)){
+        res.status(403).json({error: "User not authorized to access this information."});
+        return;
+    }
 
+    const password = req.body.password;
+    const salt = bcrypt.genSaltSync();
+    const hashedPassword = bcrypt.hashSync(password, salt);
+    
+    const dbQuery = async () => {
+        try{
+            await utils.dbQueryCallback(model.alterPassword, hashedPassword, salt, parseInt(req.params.id));
+            res.status(200).json();
+        }catch(err){
+            res.status(500).json({error: "Database error"});
+        }
+    }
+
+    dbQuery();
 };
 
 const deleteUser = (req, res) => {
+    if(req.body.userID !== parseInt(req.params.id)){
+        res.status(403).json({error: "User not authorized to access this information."});
+        return;
+    }
+
+    const dbQuery = async () => {
+        try{
+            await utils.dbQueryCallback(model.deleteUser, parseInt(req.params.id));
+            res.status(200).json();
+        }catch(err){
+            res.status(500).json({error: "Database error"});
+        }
+    }
+
+    dbQuery();
 
 };
 
@@ -123,6 +156,6 @@ module.exports = {
     login,
     showUserById,
     createUser,
-    alterUser,
+    alterPassword,
     deleteUser
 };
