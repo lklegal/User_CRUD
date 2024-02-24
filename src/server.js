@@ -8,7 +8,7 @@ app.use(express.urlencoded({
 }));
 app.use("/users", router);
 
-const port = 3000;
-app.listen(port, () => {
-    console.log("It's alive on port ", port);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log("It's alive on port ", PORT);
 });

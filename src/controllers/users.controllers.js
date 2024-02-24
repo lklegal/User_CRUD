@@ -39,6 +39,19 @@ const login = (req, res) => {
                 return;
             }
 
+            /*changing the user's isActive database attribute to 1 (true), so that their authentication
+            can be successfully checked when needed*/
+            const changeUserStatus = async () => {
+                try{
+                    const newStatus = 1;
+                    await utils.dbQueryCallback(model.changeUserStatus, newStatus, user.userID);
+                }catch(err){
+                    res.status(500).json({error: "Database error"});
+                }
+            }
+
+            changeUserStatus();
+
             const expiresIn = "2h";
             const token = jwt.sign({id: user.userID, username: user.username}, process.env.JWT_SECRETKEY,
                 {expiresIn});
@@ -134,7 +147,7 @@ const alterPassword = (req, res) => {
 
 const deleteUser = (req, res) => {
     if(req.body.userID !== parseInt(req.params.id)){
-        res.status(403).json({error: "User not authorized to access this information."});
+        res.status(403).json({error: "User not authorized to perform this action."});
         return;
     }
 

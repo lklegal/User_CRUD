@@ -5,17 +5,12 @@ const listAllUsernames = async (callback) => {
     dbConnection.query(sql, callback);
 };
 
-const listAllUsers = async (callback) => {
-    const sql = "SELECT * FROM Users;";
-    dbConnection.query(sql, callback);
-};
-
 const showUserById = (id, callback) => {
     /*Removing id from the array to put it again right after. Is this more or less confusing than just
     passing the id in dbConnection.query without the "[]", since it's already an array? Same for
-    alterPassword and deleteUser, by the way.*/
+    the other queries where this happens, by the way.*/
     id = id[0];
-    const sql = "SELECT * FROM Users WHERE userID = ?";
+    const sql = "SELECT * FROM Users WHERE userID = ?;";
     dbConnection.query(sql, [id], callback);
 };
 
@@ -37,15 +32,35 @@ const alterPassword = (params, callback) => {
 
 const deleteUser = (id, callback) => {
     id = id[0];
-    const sql = "DELETE FROM Users WHERE userID = ?";
+    const sql = "DELETE FROM Users WHERE userID = ?;";
     dbConnection.query(sql, [id], callback);
 };
 
+const listAllUsers = async (callback) => {
+    const sql = "SELECT * FROM Users;";
+    dbConnection.query(sql, callback);
+};
+
+const checkIfUserIsActive = async (id, callback) => {
+    id = id[0];
+    const sql = "SELECT isActive FROM Users WHERE userID = ?;";
+    dbConnection.query(sql, [id], callback);
+};
+
+const changeUserStatus = async (params, callback) => {
+    newStatus = params[0];
+    id = params[1];
+    const sql = "UPDATE Users SET isActive = ? WHERE userID = ?;";
+    dbConnection.query(sql, [newStatus, id], callback);
+}
+
 module.exports = {
     listAllUsernames,
-    listAllUsers,
     showUserById,
     createUser,
     alterPassword,
-    deleteUser
+    deleteUser,
+    listAllUsers,
+    checkIfUserIsActive,
+    changeUserStatus
 };
