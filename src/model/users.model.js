@@ -36,11 +36,6 @@ const deleteUser = (id, callback) => {
     dbConnection.query(sql, [id], callback);
 };
 
-const listAllUsers = async (callback) => {
-    const sql = "SELECT * FROM Users;";
-    dbConnection.query(sql, callback);
-};
-
 const checkIfUserIsActive = async (id, callback) => {
     id = id[0];
     const sql = "SELECT isActive FROM Users WHERE userID = ?;";
@@ -54,13 +49,27 @@ const changeUserStatus = async (params, callback) => {
     dbConnection.query(sql, [newStatus, id], callback);
 }
 
+const showUserByUsername = async (username, callback) => {
+    username = username[0];
+    const sql = "SELECT * FROM Users WHERE username = ?;";
+    dbConnection.query(sql, [username], callback);
+};
+
+const findUserWithUsernameAndEmail = async (params, callback) => {
+    username = params[0];
+    userEmail = params[1];
+    const sql = "SELECT EXISTS (SELECT 1 FROM Users WHERE username = ? OR userEmail = ?) AS usernameOrEmailAlreadyExist;"
+    dbConnection.query(sql, [username, userEmail], callback);
+};
+
 module.exports = {
     listAllUsernames,
     showUserById,
     createUser,
     alterPassword,
     deleteUser,
-    listAllUsers,
     checkIfUserIsActive,
-    changeUserStatus
+    changeUserStatus,
+    showUserByUsername,
+    findUserWithUsernameAndEmail
 };

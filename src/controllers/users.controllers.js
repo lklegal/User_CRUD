@@ -22,16 +22,14 @@ const login = (req, res) => {
 
     const mainLogin = async () => {
         try {
-            const allUsers = await utils.dbQueryCallback(model.listAllUsers);
-            const user = allUsers.find((value) => {
-                return username === value.username;
-            });
+            const userQueryResult = await utils.dbQueryCallback(model.showUserByUsername, username);
 
-            if(!user){
+            if(userQueryResult.length === 0){
                 res.status(401).json({error: "Invalid username or password."});
                 return;
             }
 
+            const user = userQueryResult[0];
             const hashedPassword = bcrypt.hashSync(password, user.userSalt);
 
             if(hashedPassword != user.userPassword){
@@ -57,7 +55,7 @@ const login = (req, res) => {
                 {expiresIn});
             res.status(200).json({type: "Bearer", token: token, expiresIn: expiresIn});
         } catch(err){
-            res.status(500).json({error: "Database error"});
+            res.status(500).json({error: "Database error", err});
         }
     };
 
@@ -87,13 +85,9 @@ const createUser = (req, res) => {
     
     const createUserMain = async () => {
         try {
-            const allUsers = await utils.dbQueryCallback(model.listAllUsers);
+            const isItAlreadyUsed = await utils.dbQueryCallback(model.findUserWithUsernameAndEmail, username, email);
 
-            const alreadyUsed = allUsers.find((value) => {
-                return username === value.username || email === value.userEmail;
-            });
-
-            if(alreadyUsed){
+            if(isItAlreadyUsed[0].usernameOrEmailAlreadyExist === 1){
                 res.status(400).send({error: "Username or email already used."});
                 return;
             }
@@ -111,12 +105,12 @@ const createUser = (req, res) => {
                     });
                     res.status(201).json();
                 } catch(err){
-                    res.status(500).json({error: "Database error"});
+                    res.status(500).json({error: "Database error", err});
                 }
             }
             dbQuery();
         } catch(err) {
-            res.status(500).json({error: "Database error"});
+            res.status(500).json({error: "Database error", err});
         }
     };
 
